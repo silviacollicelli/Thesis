@@ -1,0 +1,1 @@
+#Programma di evoluzione temporale che segue modello lineare con rumore gaussiano
