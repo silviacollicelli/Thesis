@@ -13,8 +13,11 @@ double gen_gauss (double mean, double sigma, double xi, double xf);
 int main(){
 
 //Parametri necessari: pesi Cij (matrice nxn), tau_{x}, dati iniziali vettore x (n elementi), vettore errore (n elementi)
-double tau=1; //parametro del modello
+double tau; //parametro del modello
 int n; //dimensione matrice Cij
+double T; // durata simulazione
+double dt=0.05*tau;
+
 double *Cij_mat, *xt, *xt1, *xt1_fin, *er;
 double **Cij; 
 Cij_mat = (double*) new double[n*n];
@@ -41,15 +44,16 @@ if (fin.good()){
 }
 fin.close();
 
-ifstream f ("x0_iniziale.txt"); //file txt con elementi in colonna
-if (f.good()){
-    for (int i=0; i<n; i++){
-       f >> xt[i];
-    }
+//dati iniziali creati da programma
+for (int i=0; i<n; i++){
+    xt[i]=1.;
 }
 
-ifstream s ("sigma.txt"); // file txt con errore gaussiano per ogni regione iesima colonna
-if (s.good()){
+
+ifstream f ("par.txt"); // file txt con parametri per simulazione e sigma
+if (f.good()){
+    f >> n >> tau >> T; 
+
     for (int i=0; i<n; i++){
        f >> er[i];
     }
@@ -63,9 +67,6 @@ colonna xj= regione i-esima cervello
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima
 */
 
-//PARAMETRI SIMULAZIONE
-double T=10; // durata simulazione
-double dt=0.05*tau;
 int N=T/dt; //step per la simulazione
 double sum=0.;
 
