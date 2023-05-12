@@ -8,6 +8,7 @@ using namespace std;
 
 double gen_gauss (double mean, double sigma, double xi, double xf);
 
+
 //eq modello: dx_{i}=-x_{i}/tau+sum_{k=!i}C_{i,k}x_{k}+dB_{i}
 
 int main(){
@@ -30,6 +31,13 @@ for (int i=0; i<n; i++){
     Cij[i]=&Cij_mat[i*n];
 }
 
+ifstream f ("par.txt"); // file txt con parametri per simulazione e sigma (tutto in colonna)
+if (f.good()){
+    f >> n >> tau >> T; 
+    for (int i=0; i<n; i++){
+       f >> er[i];
+    }
+}
 
 //Leggere la matrice dei pesi dimensione n
 ifstream fin ("pesi_Cij.txt");
@@ -49,15 +57,6 @@ for (int i=0; i<n; i++){
     xt[i]=1.;
 }
 
-
-ifstream f ("par.txt"); // file txt con parametri per simulazione e sigma
-if (f.good()){
-    f >> n >> tau >> T; 
-
-    for (int i=0; i<n; i++){
-       f >> er[i];
-    }
-}
 
 ofstream fout ("ris_sim.txt");
 /*ris_sim.txt file con risultati simulazione con 
