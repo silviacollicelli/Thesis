@@ -72,7 +72,7 @@ for (int i=0; i<n; i++){
     xt[i]=1.;
 }
 
-ofstream fout ("ris_sim.txt");
+ofstream fout ("ris_evol.txt");
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
 ofstream out200 ("FC200.txt");  //Matrice di correlazione
@@ -102,9 +102,9 @@ double sum=0.;
 
 //metodo Eulero
 for (int j=0; j<N; j++){ // ciclo temporale
-    fout << j*dt << '\t';
+    if(j%1000==1) fout << j*dt << '\t';
     for (int i=0; i<n; i++){    //ciclo spaziale
-        fout << xt[i] << '\t';
+        if (j%1000==1) fout << xt[i] << '\t';
         for (int k=0; k<n; k++){
             if(k!=i) sum+=Cij[i][k]*xt[k];
         }
@@ -122,7 +122,7 @@ for (int j=0; j<N; j++){ // ciclo temporale
     for(int i=0; i<n; i++){
         xt[i]=xt1[i];
     }
-    fout << endl;
+    if(j%1000==1) fout << endl;
 }
 
 //per cov
