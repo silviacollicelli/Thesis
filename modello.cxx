@@ -88,7 +88,7 @@ for (int i=0; i<N; i++){
 }
 for(int i=0; i<n; i++){
     for (int j=0; j<N; j++){
-        G[i][j]=gen_gauss(0, er[i]*dt, -3*er[i]*dt, 3*er[i]*dt);
+        G[i][j]=gen_gauss(0, sqrt(er[i]*dt), -3*sqrt(er[i]*dt), 3*sqrt(er[i]*dt));
     }
     cout << "fatto " << i << endl; 
 }
