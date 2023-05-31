@@ -22,7 +22,7 @@ double dt;
 n=100; 
 T=1000; 
 int m=10; //prova: uso 10 valori per la cov 
-int l0=0;
+int l0=0; //Valore di partenza per il campione di tempi per la cov
 int l=l0;
 
 double *Cij_mat, *xt, *xt1, *xt1_fin, *er, *Xij_mat;
@@ -71,27 +71,7 @@ for (int i=0; i<n; i++){
 ofstream fout ("ris_evol.txt");
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
-<<<<<<< HEAD
 ofstream outFC ("FC1.txt");  //Matrice di correlazione
-=======
-ofstream out200 ("FC200.txt");  //Matrice di correlazione
-
-int N=T/dt; //step per la simulazione
-
-//matrice RUMORI GAUSSIANI n righe x N colonne
-double *G_mat; double **G;
-G_mat = (double*) new double[N*n];
-G=(double**) new double*[N];
-for (int i=0; i<N; i++){
-    G[i]=&G_mat[n*i];
-}
-for(int i=0; i<n; i++){
-    for (int j=0; j<N; j++){
-        G[i][j]=gen_gauss(0, sqrt(er[i]*dt), -3*sqrt(er[i]*dt), 3*sqrt(er[i]*dt));
-    }
-    cout << "fatto " << i << endl; 
-}
->>>>>>> 0d117caa92b94bf9510e593e9b98b36d1ddd94b7
 
 fout << "#t\t";
 for(int i=0; i<n; i++){
@@ -127,7 +107,7 @@ for (int j=0; j<N; j++){ // ciclo temporale
     if (j%1000==1) cout << "fatto " << j << endl;
 }
 
-//Calcolo cov campionaria per tempi da 1s a 10s campionati ogni secondo 
+//Calcolo correlazione per tempi da 1s a 10s campionati ogni secondo 
 for (int s=0; s<n; s++){
     for (int i=0; i<n; i++){
         outFC << cov(m, Xij[i], Xij[s])/sqrt(cov(m, Xij[i], Xij[i])*cov(m, Xij[s], Xij[s])) << '\t'; 
