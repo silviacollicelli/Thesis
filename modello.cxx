@@ -21,7 +21,7 @@ double dt;
 
 n=100; 
 T=1000; 
-int m=10; //prova: uso 10 valori per la cov 
+int m=20; //prova: uso 10 valori per la cov 
 int l0=0; //Valore di partenza per il campione di tempi per la cov
 int l=l0;
 
@@ -62,7 +62,7 @@ fin.close();
 tau=abs(1./Cij[0][0]);
 dt=0.005*tau;
 int N=round(T/dt); //step per la simulazione
-cout << N << endl;
+
 //dati iniziali creati da programma 
 for (int i=0; i<n; i++){
     xt[i]=1.;
