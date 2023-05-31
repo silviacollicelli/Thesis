@@ -71,7 +71,27 @@ for (int i=0; i<n; i++){
 ofstream fout ("ris_evol.txt");
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
+<<<<<<< HEAD
 ofstream outFC ("FC1.txt");  //Matrice di correlazione
+=======
+ofstream out200 ("FC200.txt");  //Matrice di correlazione
+
+int N=T/dt; //step per la simulazione
+
+//matrice RUMORI GAUSSIANI n righe x N colonne
+double *G_mat; double **G;
+G_mat = (double*) new double[N*n];
+G=(double**) new double*[N];
+for (int i=0; i<N; i++){
+    G[i]=&G_mat[n*i];
+}
+for(int i=0; i<n; i++){
+    for (int j=0; j<N; j++){
+        G[i][j]=gen_gauss(0, sqrt(er[i]*dt), -3*sqrt(er[i]*dt), 3*sqrt(er[i]*dt));
+    }
+    cout << "fatto " << i << endl; 
+}
+>>>>>>> 0d117caa92b94bf9510e593e9b98b36d1ddd94b7
 
 fout << "#t\t";
 for(int i=0; i<n; i++){
