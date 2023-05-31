@@ -19,33 +19,26 @@ int n; //dimensione matrice Cij
 double T; // durata simulazione
 double dt;
 
-n=100;
-tau=1/0.681; 
-dt=0.005*tau; 
+n=100; 
 T=1000; 
+int m=10; //prova: uso 10 valori per la cov 
+int l0=0;
+int l=l0;
 
-double *Cij_mat, *xt, *xt1, *xt1_fin, *er;
-double **Cij; 
+double *Cij_mat, *xt, *xt1, *xt1_fin, *er, *Xij_mat;
+double **Cij, **Xij; //Xij Matrice che contiene elementi dell'evoluzione temporale fino a t=j*tau per ogni regione (100 righe x m colonne) per fare cov
 Cij_mat = (double*) new double[n*n];
 Cij=(double**) new double*[n];
+Xij_mat = (double*) new double[m*n];
+Xij=(double**) new double*[n];
 xt=(double*) new double[n];
 xt1=(double*) new double[n];
 xt1_fin=(double*) new double[n];
 er=(double*) new double[n];
 for (int i=0; i<n; i++){
-    Cij[i]=&Cij_mat[i*n];
+    Cij[i]=&Cij_mat[n*i];
+    Xij[i]=&Xij_mat[m*i];
 }
-
-int m=round(tau/dt); 
-
-double *Xij_mat;
-double **Xij; //Matrice che contiene elementi dell'evoluzione temporale fino a t=j*tau per ogni regione (100 righe x m colonne) per fare cov
-Xij_mat = (double*) new double[m*n];
-Xij=(double**) new double*[m];
-for (int i=0; i<m; i++){
-    Xij[i]=&Xij_mat[n*i];
-}
-
 ifstream f ("example_real_Sigma.txt"); // file txt con parametri per simulazione e sigma (tutto in colonna)
 if (f.good()){
     for (int i=0; i<n; i++){
@@ -66,8 +59,11 @@ if (fin.good()){
     }
 }
 fin.close();
-
-//dati iniziali creati da programma     Possono andare bene?
+tau=abs(1./Cij[0][0]);
+dt=0.005*tau;
+int N=round(T/dt); //step per la simulazione
+cout << N << endl;
+//dati iniziali creati da programma 
 for (int i=0; i<n; i++){
     xt[i]=1.;
 }
@@ -75,23 +71,7 @@ for (int i=0; i<n; i++){
 ofstream fout ("ris_evol.txt");
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
-ofstream out200 ("FC200.txt");  //Matrice di correlazione
-
-int N=T/dt; //step per la simulazione
-
-//matrice RUMORI GAUSSIANI n righe x N colonne
-double *G_mat; double **G;
-G_mat = (double*) new double[N*n];
-G=(double**) new double*[N];
-for (int i=0; i<N; i++){
-    G[i]=&G_mat[n*i];
-}
-for(int i=0; i<n; i++){
-    for (int j=0; j<N; j++){
-        G[i][j]=gen_gauss(0, er[i]*dt, -3*er[i]*dt, 3*er[i]*dt);
-    }
-    cout << "fatto " << i << endl; 
-}
+ofstream outFC ("FC1.txt");  //Matrice di correlazione
 
 fout << "#t\t";
 for(int i=0; i<n; i++){
@@ -102,38 +82,50 @@ double sum=0.;
 
 //metodo Eulero
 for (int j=0; j<N; j++){ // ciclo temporale
-    if(j%1000==1) fout << j*dt << '\t';
+    if(j%100==1) fout << j*dt << '\t';
     for (int i=0; i<n; i++){    //ciclo spaziale
-        if (j%1000==1) fout << xt[i] << '\t';
+        if (j%100==1) fout << xt[i] << '\t';
         for (int k=0; k<n; k++){
             if(k!=i) sum+=Cij[i][k]*xt[k];
         }
         xt1[i]= xt[i]+(-xt[i]/tau+sum)*dt;
         sum=0;
-        xt1_fin[i]=xt1[i]+G[i][j];
+        xt1_fin[i]=xt1[i]+gen_gauss(0, sqrt(er[i]*dt), -3*sqrt(er[i]*dt), 3*sqrt(er[i]*dt));
     }
-    if (j>=20000 && j<=20200){ 
+    if (floor((j-1)*dt)==l && floor(j*dt)==l+1 && l<l0+m){ //floor approssima al più piccolo intero, round approssima all'intero più vicino
         for(int i=0; i<n; i++){
-            Xij[i][j-20000]=xt[i];
+            Xij[i][l-l0]=xt[i];
         }
+        l++;
     }
 
     //Aggiornamento
     for(int i=0; i<n; i++){
-        xt[i]=xt1[i];
+        xt[i]=xt1_fin[i];
     }
-    if(j%1000==1) fout << endl;
+    if(j%100==1) fout << endl;
+    if (j%1000==1) cout << "fatto " << j << endl;
 }
 
-//per cov
-//Calcolo cov per t=200*tau
-
-for (int l=0; l<n; l++){
+//Calcolo cov campionaria per tempi da 1s a 10s campionati ogni secondo 
+for (int s=0; s<n; s++){
     for (int i=0; i<n; i++){
-        out200 << cov(m, Xij[i], Xij[l]) << '\t'; 
+        outFC << cov(m, Xij[i], Xij[s])/sqrt(cov(m, Xij[i], Xij[i])*cov(m, Xij[s], Xij[s])) << '\t'; 
     }
-    out200 << endl;
+    outFC << endl;
 }
+
+outFC.close();
+fout.close();
+
+delete [] xt;
+delete [] xt1;
+delete [] xt1_fin;
+delete [] er;
+delete [] Cij;
+delete [] Cij_mat;
+delete [] Xij;
+delete [] Xij_mat;
 
     return 0;
 }
