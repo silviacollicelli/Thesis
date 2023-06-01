@@ -21,24 +21,32 @@ double dt;
 
 n=100; 
 T=1000; 
-int m=20; //prova: uso 10 valori per la cov 
+int m=10; //uso 10 valori per la cov 
+int w=T/m; //numero di matrici FC calcolabili
+//m=10s->short window size range
 int l0=0; //Valore di partenza per il campione di tempi per la cov
 int l=l0;
 
-double *Cij_mat, *xt, *xt1, *xt1_fin, *er, *Xij_mat;
-double **Cij, **Xij; //Xij Matrice che contiene elementi dell'evoluzione temporale fino a t=j*tau per ogni regione (100 righe x m colonne) per fare cov
+double *Cij_mat, *xt, *xt1, *xt1_fin, *er;
+double **Cij;
 Cij_mat = (double*) new double[n*n];
 Cij=(double**) new double*[n];
-Xij_mat = (double*) new double[m*n];
-Xij=(double**) new double*[n];
+double ***Xij= new double**[w]; //Xij Matrice che contiene elementi dell'evoluzione temporale fino a t=j*tau per ogni regione wxnxm 
 xt=(double*) new double[n];
 xt1=(double*) new double[n];
 xt1_fin=(double*) new double[n];
 er=(double*) new double[n];
 for (int i=0; i<n; i++){
     Cij[i]=&Cij_mat[n*i];
-    Xij[i]=&Xij_mat[m*i];
 }
+
+for (int i=0; i<w; i++){
+    Xij[i]=new double*[n];
+    for (int j=0; j<n; j++){
+        Xij[i][j]=new double [m];
+    }
+}
+
 ifstream f ("example_real_Sigma.txt"); // file txt con parametri per simulazione e sigma (tutto in colonna)
 if (f.good()){
     for (int i=0; i<n; i++){
@@ -68,7 +76,7 @@ for (int i=0; i<n; i++){
     xt[i]=1.;
 }
 
-ofstream fout ("ris_evol.txt");
+ofstream fout ("ris_evol.txt"); 
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
 ofstream outFC ("FC1.txt");  //Matrice di correlazione
@@ -79,6 +87,7 @@ for(int i=0; i<n; i++){
 }
 fout << endl;
 double sum=0.;
+int count=0;
 
 //metodo Eulero
 for (int j=0; j<N; j++){ // ciclo temporale
@@ -92,9 +101,10 @@ for (int j=0; j<N; j++){ // ciclo temporale
         sum=0;
         xt1_fin[i]=xt1[i]+gen_gauss(0, sqrt(er[i]*dt), -3*sqrt(er[i]*dt), 3*sqrt(er[i]*dt));
     }
-    if (floor((j-1)*dt)==l && floor(j*dt)==l+1 && l<l0+m){ //floor approssima al più piccolo intero, round approssima all'intero più vicino
+    if (floor((j-1)*dt)==l && floor(j*dt)==l+1){ //floor approssima al più piccolo intero, round approssima all'intero più vicino
+        count=floor(l/m);
         for(int i=0; i<n; i++){
-            Xij[i][l-l0]=xt[i];
+            Xij[count][i][l-(count*m)]=xt[i];
         }
         l++;
     }
@@ -108,11 +118,14 @@ for (int j=0; j<N; j++){ // ciclo temporale
 }
 
 //Calcolo correlazione per tempi da 1s a 10s campionati ogni secondo 
-for (int s=0; s<n; s++){
-    for (int i=0; i<n; i++){
-        outFC << cov(m, Xij[i], Xij[s])/sqrt(cov(m, Xij[i], Xij[i])*cov(m, Xij[s], Xij[s])) << '\t'; 
+for(int r=0; r<w; r++){
+    for (int s=0; s<n; s++){
+        for (int i=0; i<n; i++){
+            outFC << cov(m, Xij[r][i], Xij[r][s])/sqrt(cov(m, Xij[r][i], Xij[r][i])*cov(m, Xij[r][s], Xij[r][s])) << endl; 
+        }
+        outFC << endl;
     }
-    outFC << endl;
+    outFC<< endl;
 }
 
 outFC.close();
@@ -124,8 +137,13 @@ delete [] xt1_fin;
 delete [] er;
 delete [] Cij;
 delete [] Cij_mat;
+for (int i=0; i<w; i++){
+    for (int j=0; j<n; j++) {
+        delete [] Xij[i][j];
+    }
+    delete [] Xij[i];
+}
 delete [] Xij;
-delete [] Xij_mat;
 
     return 0;
 }
