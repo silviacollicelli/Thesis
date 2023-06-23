@@ -21,7 +21,7 @@ double dt;
 
 n=100; 
 T=1000; 
-int m=10; //uso 10 valori per la cov 
+int m=30; //uso 10 valori per la cov 
 int w=T/m; //numero di matrici FC calcolabili
 //m=10s->short window size range
 int l0=0; //Valore di partenza per il campione di tempi per la cov
@@ -121,9 +121,9 @@ for (int j=0; j<N; j++){ // ciclo temporale
 for(int r=0; r<w; r++){
     for (int s=0; s<n; s++){
         for (int i=0; i<n; i++){
-            outFC << cov(m, Xij[r][i], Xij[r][s])/sqrt(cov(m, Xij[r][i], Xij[r][i])*cov(m, Xij[r][s], Xij[r][s])) << endl; 
+            outFC << cov(m, Xij[r][i], Xij[r][s])/sqrt(cov(m, Xij[r][i], Xij[r][i])*cov(m, Xij[r][s], Xij[r][s])) << "\t"; 
         }
-        outFC << endl;
+        outFC << "\t";
     }
     outFC<< endl;
 }
