@@ -23,11 +23,16 @@ n=100;
 T=1000; 
 int m=30; //uso 10 valori per la cov 
 int w=T/m; //numero di matrici FC calcolabili
+T = w*m;
+
 //m=10s->short window size range
 int l0=0; //Valore di partenza per il campione di tempi per la cov
 int l=l0;
 
 double *Cij_mat, *xt, *xt1, *xt1_fin, *er;
+
+double **F_mat = new double *[w];
+
 double **Cij;
 Cij_mat = (double*) new double[n*n];
 Cij=(double**) new double*[n];
@@ -45,6 +50,7 @@ for (int i=0; i<w; i++){
     for (int j=0; j<n; j++){
         Xij[i][j]=new double [m];
     }
+    F_mat[i]=new double [n*n];
 }
 
 ifstream f ("example_real_Sigma.txt"); // file txt con parametri per simulazione e sigma (tutto in colonna)
@@ -70,6 +76,7 @@ fin.close();
 tau=abs(1./Cij[0][0]);
 dt=0.005*tau;
 int N=round(T/dt); //step per la simulazione
+cout << N << endl;
 
 //dati iniziali creati da programma 
 for (int i=0; i<n; i++){
@@ -79,7 +86,8 @@ for (int i=0; i<n; i++){
 ofstream fout ("ris_evol.txt"); 
 /*ris_sim.txt file con risultati simulazione con file matriciale ij
 elemento di matrice x_{i, j}= evoluzione temporale al tempo t=j*dt della regione i-esima*/
-ofstream outFC ("FC1.txt");  //Matrice di correlazione
+
+//ofstream outFC ("FC1.txt");  //Matrice di correlazione
 
 fout << "#t\t";
 for(int i=0; i<n; i++){
@@ -103,7 +111,9 @@ for (int j=0; j<N; j++){ // ciclo temporale
     }
     if (floor((j-1)*dt)==l && floor(j*dt)==l+1){ //floor approssima al più piccolo intero, round approssima all'intero più vicino
         count=floor(l/m);
-        for(int i=0; i<n; i++){
+        
+        for(int i=0; i<n; i++)
+        {
             Xij[count][i][l-(count*m)]=xt[i];
         }
         l++;
@@ -117,19 +127,35 @@ for (int j=0; j<N; j++){ // ciclo temporale
     if (j%1000==1) cout << "fatto " << j << endl;
 }
 
+double fc;
+
 //Calcolo correlazione per tempi da 1s a 10s campionati ogni secondo 
 for(int r=0; r<w; r++){
+	int cc=0;
     for (int s=0; s<n; s++){
         for (int i=0; i<n; i++){
-            outFC << cov(m, Xij[r][i], Xij[r][s])/sqrt(cov(m, Xij[r][i], Xij[r][i])*cov(m, Xij[r][s], Xij[r][s])) << "\t"; 
+            fc = cov(m, Xij[r][i], Xij[r][s])/sqrt(cov(m, Xij[r][i], Xij[r][i])*cov(m, Xij[r][s], Xij[r][s]));
+			F_mat[r][cc] = fc;
+	        cc++; //outFC << "\t";s 
         }
-        outFC << "\t";
     }
-    outFC<< endl;
+   //outFC<< endl;
 }
 
-outFC.close();
+//outFC.close();
 fout.close();
+
+double *v = new double [w-1];
+
+ofstream outV ("V.txt");  //Matrice di correlazione
+
+for(int r=1; r<w; r++){
+	v[r-1] = 1-cov(n*n, F_mat[r], F_mat[r-1])/sqrt(cov(n*n, F_mat[r], F_mat[r])*cov(n*n, F_mat[r-1], F_mat[r-1]));
+	outV << v[r-1] << endl;
+}
+
+
+outV.close();
 
 delete [] xt;
 delete [] xt1;
@@ -142,8 +168,10 @@ for (int i=0; i<w; i++){
         delete [] Xij[i][j];
     }
     delete [] Xij[i];
+    delete [] F_mat[i];
 }
 delete [] Xij;
+delete [] F_mat;
 
     return 0;
 }
