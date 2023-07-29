@@ -1,0 +1,5 @@
+bin(x,w)=w*floor(x/w)
+p 'Vp_short.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "short_{p, sim}", \
+'Vp_medium.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "medium_{p, sim}", \
+'Vp_long.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "long_h{p, sim}"
+set key l
