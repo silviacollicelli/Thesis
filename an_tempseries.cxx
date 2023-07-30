@@ -30,23 +30,37 @@ string namef2= "_AMC2_nov.txt";
 
 int n1=31;  int n1max=36;
 int n2=26;  int n2max=34;
+int n2_start=2;
 ifstream AMCh[n1+n2];
+string names[n1+n2];
 
 int r=0;
 int y=0;
 for (int i=0; i<n1; i++){
-    if (i<9) AMCh[i].open(name1_0 + to_string(i+r+1) + namef1);
-    else AMCh[i].open(name1 + to_string(i+r+1) + namef1);
+    if (i<9) {
+        AMCh[i].open(name1_0 + to_string(i+r+1) + namef1);
+        names[i]=name1_0 + to_string(i+r+1) + namef1;
+    }
+    else {
+        AMCh[i].open(name1 + to_string(i+r+1) + namef1);
+        names[i]=name1 + to_string(i+r+1) + namef1;
+    }
     if (!AMCh[i]){
         i=i-1;
         r=r+1;
     }
 }
 r=0;
-for (int i=n1; i<n1+n2; i++){
-    if (i-n1<8) AMCh[i].open(name2_0 + to_string(i+y+1-n1) + namef2);
-    else AMCh[i].open(name2 + to_string(i+y+1-n1) + namef2);
-    if (!AMCh[i]){
+for (int i=n2_start; i<n2+n2_start; i++){
+    if (i+y<10) {
+        AMCh[i+n1-n2_start].open(name2_0 + to_string(i+y) + namef2);
+        names[i+n1-n2_start]=name2_0 + to_string(i+y) + namef2;
+    }
+    else {
+        AMCh[i+n1-n2_start].open(name2 + to_string(i+y) + namef2);
+        names[i+n1-n2_start]=name2 + to_string(i+y) + namef2;
+    }
+    if (!AMCh[i+n1-n2_start]){
         i=i-1;
         y=y+1;
     }
@@ -63,8 +77,8 @@ int N=0;
 
 //Ho raggruppato insieme sessione 1 e sessione 2
 for (int my=0; my<n1+n2; my++){
-    if(my<n1) cout << "Sessione 1\nPAZIENTE " << my << endl;
-    else cout << "Sessione 2\nPAZIENTE " << my-n1 << endl; 
+    if(my<n1) cout << "Sessione 1\tPAZIENTE " << my << "\t" << names[my] << endl;
+    else cout << "Sessione 2\tPAZIENTE " << my << "\t" << names[my] << endl; 
 double a;
     if (AMCh[my].good()){
         N=0;
@@ -123,7 +137,7 @@ for(int q=0; q<3; q++) {
           F_mat[r]=new double [n*n];
         }      
        
-        cout <<"m = " << m  << " w " << w << endl;
+        //cout <<"m = " << m  << " w " << w << endl;
         
         for(int r=0; r<w; r++){
 
@@ -173,7 +187,6 @@ for(int q=0; q<3; q++) {
     
 } // end for q
 
-cout << "done " << my << endl;
 } // end for my
 
     return 0;

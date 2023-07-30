@@ -67,6 +67,7 @@ string namef2b= "_AMC2_nov_Sigma.txt";
 
 int n1=31;  int n1max=36;
 int n2=26;  int n2max=34;
+int n2_start=2;
 string names[n1+n2];
 ifstream AMCh[2][n1+n2];
 
@@ -80,31 +81,40 @@ for (int s=0; s<2; s++){
             if (i<9) {
                 AMCh[s][i].open(name1a_0 + to_string(i+r+1) + namef1a);
                 names[i]=name1a_0 + to_string(i+r+1) + namef1a;
+                //cout << names[i];
             }
             else {
                 AMCh[s][i].open(name1a + to_string(i+r+1) + namef1a);
                 names[i]=name1a + to_string(i+r+1) + namef1a;
+                //cout << names[i];
             }
             if (!AMCh[s][i]){
                 i=i-1;
                 r=r+1;
+                //cout << "\tNO";
             }
+            //cout << endl;
         }
-        for (int i=n1; i<n1+n2; i++){
-            if (i-n1<8) {
-                AMCh[s][i].open(name1b_0 + to_string(i+y+1-n1) + namef1b);
-                names[i]=name1b_0 + to_string(i+y+1-n1) + namef1b;
+        for (int i=n2_start; i<n2+n2_start; i++){
+            if (i+y<10) {
+                AMCh[s][i+n1-n2_start].open(name1b_0 + to_string(i+y) + namef1b);
+                names[i+n1-n2_start]=name1b_0 + to_string(i+y) + namef1b;
+                //cout << names[i+n1-n2_start];
             }
             else {
-                AMCh[s][i].open(name1b + to_string(i+y+1-n1) + namef1b);
-                names[i]=name1b + to_string(i+y+1-n1) + namef1b;
+                AMCh[s][i+n1-n2_start].open(name1b + to_string(i+y) + namef1b);
+                names[i+n1-n2_start]=name1b + to_string(i+y) + namef1b;
+                //cout << names[i+n1-n2_start];
             }
-            if (!AMCh[i]){
+            if (!AMCh[s][i+n1-n2_start]){
                 i=i-1;
                 y=y+1;
+                //cout << "\tNO";
             }
+            //cout << endl;
         }
     }
+
     r=0;
     y=0;
     if(s==1){
@@ -116,10 +126,10 @@ for (int s=0; s<2; s++){
                 r=r+1;
             }
         }
-        for (int i=n1; i<n1+n2; i++){
-            if (i-n1<8) AMCh[s][i].open(name2b_0 + to_string(i+y+1-n1) + namef2b);
-            else AMCh[s][i].open(name2b + to_string(i+y+1-n1) + namef2b);
-            if (!AMCh[s][i]){
+        for (int i=n2_start; i<n2+n2_start; i++){
+            if (i+y<10) AMCh[s][i+n1-n2_start].open(name2b_0 + to_string(i+y) + namef2b);
+            else AMCh[s][i+n1-n2_start].open(name2b + to_string(i+y) + namef2b);
+            if (!AMCh[s][i+n1-n2_start]){
                 i=i-1;
                 y=y+1;
             }
@@ -133,7 +143,6 @@ ofstream outV[3];
 outV[0].open("Vp_short.txt");
 outV[1].open("Vp_medium.txt");
 outV[2].open("Vp_long.txt");
-
 
 for (int my=0; my<n1+n2; my++){    //Ciclo sui file
 
