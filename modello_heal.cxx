@@ -143,6 +143,7 @@ ofstream outV[3];
 outV[0].open("Vp_short.txt");
 outV[1].open("Vp_medium.txt");
 outV[2].open("Vp_long.txt");
+//ofstream outFC("FC1.txt");
 
 for (int my=0; my<n1+n2; my++){    //Ciclo sui file
 
@@ -225,7 +226,6 @@ int m=0;
 int n_durations = 3; //tre gruppi di finestre temporali: short, medium e long
 double fc;
 
-
 for(int q=0; q<3; q++) {
   
 	int min_l, max_l;   //lunghezze max e min delle finestre temporali
@@ -278,8 +278,9 @@ for(int q=0; q<3; q++) {
                     fc = cov(m, xij[i], xij[s])/sqrt(cov(m, xij[i], xij[i])*cov(m, xij[s], xij[s]));
 			        F_mat[r][cc] = fc; //ogni matrice sta in un'unica riga
 	                cc++; //outFC << "\t";s
-	                
+	                //if (my==0 && q==0 && m==min_l+1 && r==1) outFC << fc << "\t";
                 }
+                //if (my==0 && q==0 && m==min_l+1 && r==1) outFC << endl;
             }
 
             for (int i=0; i<n; i++){
