@@ -1,5 +1,0 @@
-bin(x,w)=w*floor(x/w)
-p 'Vh_short.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "short_{h, sim}", \
-'Vh_medium.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "medium_{h, sim}", \
-'Vh_long.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "long_{h, sim}" 
-set key l

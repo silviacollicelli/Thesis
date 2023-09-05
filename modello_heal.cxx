@@ -81,37 +81,29 @@ for (int s=0; s<2; s++){
             if (i<9) {
                 AMCh[s][i].open(name1a_0 + to_string(i+r+1) + namef1a);
                 names[i]=name1a_0 + to_string(i+r+1) + namef1a;
-                //cout << names[i];
             }
             else {
                 AMCh[s][i].open(name1a + to_string(i+r+1) + namef1a);
                 names[i]=name1a + to_string(i+r+1) + namef1a;
-                //cout << names[i];
             }
             if (!AMCh[s][i]){
                 i=i-1;
                 r=r+1;
-                //cout << "\tNO";
             }
-            //cout << endl;
         }
         for (int i=n2_start; i<n2+n2_start; i++){
             if (i+y<10) {
                 AMCh[s][i+n1-n2_start].open(name1b_0 + to_string(i+y) + namef1b);
                 names[i+n1-n2_start]=name1b_0 + to_string(i+y) + namef1b;
-                //cout << names[i+n1-n2_start];
             }
             else {
                 AMCh[s][i+n1-n2_start].open(name1b + to_string(i+y) + namef1b);
                 names[i+n1-n2_start]=name1b + to_string(i+y) + namef1b;
-                //cout << names[i+n1-n2_start];
             }
             if (!AMCh[s][i+n1-n2_start]){
                 i=i-1;
                 y=y+1;
-                //cout << "\tNO";
             }
-            //cout << endl;
         }
     }
 
@@ -140,10 +132,12 @@ for (int s=0; s<2; s++){
 }
 
 ofstream outV[3];
-outV[0].open("Vp_short.txt");
-outV[1].open("Vp_medium.txt");
-outV[2].open("Vp_long.txt");
-//ofstream outFC("FC1.txt");
+outV[0].open(".\\V\\Vh_short.txt");
+outV[1].open(".\\V\\Vh_medium.txt");
+outV[2].open(".\\V\\Vh_long.txt");
+ofstream outFC(".\\FC\\FC_hs.txt");
+ofstream outFC2(".\\FC\\FC_hs105.txt");
+ofstream ts ("time.txt");
 
 for (int my=0; my<n1+n2; my++){    //Ciclo sui file
 
@@ -162,7 +156,6 @@ if (AMCh[1][my].good()){
 }
 
 //Leggere la matrice dei pesi dimensione n
-//ifstream fin ("example_real.txt");
 if (AMCh[0][my].good()){
     int j=0; int i=0;
     while (!AMCh[0][my].eof()){
@@ -176,7 +169,6 @@ if (AMCh[0][my].good()){
 tau=abs(1./Cij[0][0]);
 dt=0.005*tau;
 int N=round(T/dt); //step per la simulazione
-
 //dati iniziali creati da programma 
 for (int i=0; i<n; i++){
     xt[i]=0.;
@@ -184,6 +176,13 @@ for (int i=0; i<n; i++){
 
 double sum=0.;
 int count=0;
+/*for (int j=0; j<n; j++){
+    for (int i=0; i<n; i++){
+        if (i==j) Cij[j][i]=-2.6;
+        else Cij[j][i]=-my*0.01-0.1;
+    }
+}
+*/
 
 //metodo Eulero
 for (int j=0; j<N; j++){ // ciclo temporale
@@ -200,15 +199,17 @@ for (int j=0; j<N; j++){ // ciclo temporale
     if (floor((j-1)*dt)==l && floor(j*dt)==l+1){ //floor approssima al più piccolo intero, round approssima all'intero più vicino
         for(int i=0; i<n; i++){
             X[l][i]=xt1_fin[i];
+            if (my==0) ts << X[l][i] << '\t';
         }
+        if (my==0) ts << endl;
         l++;
     }
 
-    //Aggiornamento
     for(int i=0; i<n; i++){
         xt[i]=xt1_fin[i];
     }
 }
+//if (my==0) cout << "fatto" << endl;
 
 /*ofstream TS("ts.txt");  //evoluzione temporale per tempi interi
 
@@ -255,9 +256,7 @@ for(int q=0; q<3; q++) {
     	for (int r=0; r<w; r++){
           F_mat[r]=new double [n*n];
         }      
-       
-        //cout <<"m = " << m  << " w " << w << endl;
-        
+               
         for(int r=0; r<w; r++){
 
     	    double **xij;
@@ -269,7 +268,7 @@ for(int q=0; q<3; q++) {
       
                for (int s=0; s<m; s++){
                    xij[i][s] = X[tmin+s][i];
-	    	   }
+	    	    }
 	        }
 
 	        int cc=0;
@@ -277,10 +276,12 @@ for(int q=0; q<3; q++) {
                 for (int i=0; i<n; i++){
                     fc = cov(m, xij[i], xij[s])/sqrt(cov(m, xij[i], xij[i])*cov(m, xij[s], xij[s]));
 			        F_mat[r][cc] = fc; //ogni matrice sta in un'unica riga
-	                cc++; //outFC << "\t";s
-	                //if (my==0 && q==0 && m==min_l+1 && r==1) outFC << fc << "\t";
+	                cc++;
+	                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << fc << "\t";
+	                if (my==0 && q==2 && m==max_l && r==1) outFC2 << fc << "\t";
                 }
-                //if (my==0 && q==0 && m==min_l+1 && r==1) outFC << endl;
+                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << endl;
+                if (my==0 && q==2 && m==max_l && r==1) outFC2 << endl;
             }
 
             for (int i=0; i<n; i++){
@@ -301,9 +302,9 @@ for(int q=0; q<3; q++) {
             delete [] F_mat[r];
         }      
 		delete [] F_mat;
-    
+
     } // end for m
-    
+
 } // end for q
 
 } // end for my

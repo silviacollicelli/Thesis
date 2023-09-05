@@ -1,6 +1,0 @@
-bin(x,w)=w*floor(x/w)
-p 'Vp_data_short.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "short_{p, data}", \
-'Vp_data_medium.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "medium_{p, data}", \
-'Vp_data_long.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "long_{p, data}", 
-set key l
-set title "V_{dFC} from PATIENTS' time series"

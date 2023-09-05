@@ -1,0 +1,9 @@
+bin(x,w)=w*floor(x/w)
+p 'Vp_short.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "short_{sp}", \
+'Vp_medium.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "medium_{sp}", \
+'Vp_long.txt' u (bin($1,0.04)):(1.0) smooth freq w lines t "long_h{sp}"
+set key l
+set ylabel "Counts"
+set xlabel "V_{dFC}"
+set title "V_{dFC} from simulated unhealthy patients"   
+replot

@@ -52,16 +52,18 @@ for (int i=np_start; i<np+np_start; i++){
 }
 //return 0;
 ofstream outVp[3];
-outVp[0].open("Vp_data_short.txt");
-outVp[1].open("Vp_data_medium.txt");
-outVp[2].open("Vp_data_long.txt");
+outVp[0].open(".\\V\\Vp_data_short.txt");
+outVp[1].open(".\\V\\Vp_data_medium.txt");
+outVp[2].open(".\\V\\Vp_data_long.txt");
+ofstream outFC(".\\FC\\FC_pd.txt");
+ofstream outFC2(".\\FC\\FC_pd105.txt");
 
 string line;
 int N=0;
 double q;
 for (int my=0; my<np; my++){
     cout << "PAZIENTE malato N\t" << my << "\tFile " << names[my] << endl;
-    if(my==56 || my==81 || my==82 || my==111 || my==124 || my==125) cout << "File danneggiato" << endl;
+    if(my==8 || my==56 || my==81 || my==82 || my==87 || my==98 || my==111 || my ==121 || my==124 || my==125) cout << "File danneggiato" << endl;
     else{
         if (AMCp[my].good()){
             N=0;
@@ -143,10 +145,14 @@ for(int q=0; q<3; q++) {
                 for (int i=0; i<n; i++){
                     fc = cov(m, xij[i], xij[s])/sqrt(cov(m, xij[i], xij[i])*cov(m, xij[s], xij[s]));
 			        F_mat[r][cc] = fc; //ogni matrice sta in un'unica riga
+                    if (my==0 && q==1 && m==min_l+11 && r==1) outFC << fc << "\t";
+                    if (my==0 && q==2 && m==max_l && r==1) outFC2 << fc << "\t";
 	                //cout << F_mat[r][cc] << "\t";
 	                cc++; //outFC << "\t";s
 	                
                 }
+                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << endl;
+                if (my==0 && q==2 && m==max_l && r==1) outFC2 << endl;
             }
 
             for (int i=0; i<n; i++){

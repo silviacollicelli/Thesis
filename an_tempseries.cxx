@@ -68,10 +68,11 @@ for (int i=n2_start; i<n2+n2_start; i++){
 
 
 ofstream outVh[3];
-outVh[0].open("Vh_data_short.txt");
-outVh[1].open("Vh_data_medium.txt");
-outVh[2].open("Vh_data_long.txt");
-ofstream outFC("FC1.txt");
+outVh[0].open(".\\V\\Vh_data_short.txt");
+outVh[1].open(".\\V\\Vh_data_medium.txt");
+outVh[2].open(".\\V\\Vh_data_long.txt");
+ofstream outFC(".\\FC\\FC_hd.txt");
+ofstream outFC2(".\\FC\\FC_hd105.txt");
 string line;
 int N=0;
 
@@ -158,10 +159,12 @@ for(int q=0; q<3; q++) {
                 for (int i=0; i<n; i++){
                     fc = cov(m, xij[i], xij[s])/sqrt(cov(m, xij[i], xij[i])*cov(m, xij[s], xij[s]));
 			        F_mat[r][cc] = fc; //ogni matrice sta in un'unica riga
-	                if (my==0 && q==0 && m==min_l+1 && r==1) outFC << fc << "\t";
+	                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << fc << "\t";
+                    if (my==0 && q==2 && m==max_l && r==1) outFC2 << fc << "\t";
 	                cc++; //outFC << "\t";s
                 }
-                if (my==0 && q==0 && m==min_l+1 && r==1) outFC << endl;
+                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << endl;
+                if (my==0 && q==2 && m==max_l && r==1) outFC2 << endl;
             }
 
             for (int i=0; i<n; i++){

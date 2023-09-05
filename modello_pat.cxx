@@ -73,20 +73,15 @@ for (int s=0; s<2; s++){
             if (i+r<100) {
                 AMCp[s][i-np_start].open(name1_0 + to_string(i+r) + namef1);
                 names[i-np_start]=name1_0 + to_string(i+r) + namef1;
-                //cout << i-np_start << "\t" << name1_0 + to_string(i+r) + namef1;
             }
             else {
                 AMCp[s][i-np_start].open(name1 + to_string(i+r) + namef1);
                 names[i-np_start]=name1 + to_string(i+r) + namef1;
-                //cout << i-np_start << "\t" << name1 + to_string(i+r) + namef1;
-
             }
             if (!AMCp[s][i-np_start]){
                 i=i-1;
                 r=r+1;
-                //cout << "\tNO";
             }
-            //cout << endl;
         }
     }
     //return 0;
@@ -104,9 +99,11 @@ for (int s=0; s<2; s++){
 }
 
 ofstream outV[3];
-outV[0].open("Vp_short.txt");
-outV[1].open("Vp_medium.txt");
-outV[2].open("Vp_long.txt");
+outV[0].open(".\\V\\Vp_short.txt");
+outV[1].open(".\\V\\Vp_medium.txt");
+outV[2].open(".\\V\\Vp_long.txt");
+ofstream outFC(".\\FC\\FC_ps.txt");
+ofstream outFC2(".\\FC\\FC_ps105.txt");
 
 
 for (int my=0; my<np; my++){    //Ciclo sui file
@@ -169,11 +166,9 @@ for (int j=0; j<N; j++){ // ciclo temporale
         l++;
     }
 
-    //Aggiornamento
     for(int i=0; i<n; i++){
         xt[i]=xt1_fin[i];
     }
-    //if (j%10000==1) cout << "fatto " << j << endl;
 }
 
 /*ofstream TS("ts.txt");  //evoluzione temporale per tempi interi
@@ -223,9 +218,7 @@ for(int q=0; q<3; q++) {
     	for (int r=0; r<w; r++){
           F_mat[r]=new double [n*n];
         }      
-       
-        //cout <<"m = " << m  << " w " << w << endl;
-        
+               
         for(int r=0; r<w; r++){
 
     	    double **xij;
@@ -245,10 +238,13 @@ for(int q=0; q<3; q++) {
                 for (int i=0; i<n; i++){
                     fc = cov(m, xij[i], xij[s])/sqrt(cov(m, xij[i], xij[i])*cov(m, xij[s], xij[s]));
 			        F_mat[r][cc] = fc; //ogni matrice sta in un'unica riga
-	                //cout << F_mat[r][cc] << "\t";
-	                cc++; //outFC << "\t";s
+                    if (my==0 && q==1 && m==min_l+11 && r==1) outFC << fc << "\t";
+                    if (my==0 && q==2 && m==max_l && r==1) outFC2 << fc << "\t";
+	                cc++;
 	                
                 }
+                if (my==0 && q==1 && m==min_l+11 && r==1) outFC << endl;
+                if (my==0 && q==2 && m==max_l && r==1) outFC2 << endl;
             }
 
             for (int i=0; i<n; i++){
